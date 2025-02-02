@@ -10,14 +10,6 @@ Neuron is a KISTI GPU cluster system consisting of 65 nodes with 260 GPUs (120 o
 
 <p align="center"><img src="https://user-images.githubusercontent.com/84169368/205237254-b916eccc-e4b7-46a8-b7ba-c156e7609314.png"/></p>
 
-## Cloning the Repository
-to set up this repository on your scratch direcory.
-```
-[glogin01]$ cd /scratch/$USER
-[glogin01]$ git clone https://github.com/hwang2006/deepseek-with-ollama-on-supercomputer.git
-[glogin01]$ ls -al deepseek
-```
-
 ## Installing Conda
 Once logging in to Neuron, you will need to have either [Anaconda](https://www.anaconda.com/) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed on your scratch directory. Anaconda is distribution of the Python and R programming languages for scientific computing, aiming to simplify package management and deployment. Anaconda comes with +150 data science packages, whereas Miniconda, a small bootstrap version of Anaconda, comes with a handful of what's needed.
 
@@ -127,6 +119,14 @@ Thank you for installing Miniconda3!
 /scratch/$USER/miniconda3/condabin/conda
 [glogin01]$ conda --version
 conda 23.9.0
+```
+
+## Cloning the Repository
+to set up this repository on your scratch direcory.
+```
+[glogin01]$ cd /scratch/$USER
+[glogin01]$ git clone https://github.com/hwang2006/deepseek-with-ollama-on-supercomputer.git
+[glogin01]$ ls -al deepseek
 ```
 
 ## Installing Ollama
