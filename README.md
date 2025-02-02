@@ -513,4 +513,6 @@ ssh -L localhost:7860:gpu32:7860 $USER@neuron.ksc.re.kr
 <img width="1231" alt="gradio_ui" src="https://github.com/user-attachments/assets/006ea85b-3535-4f2b-9f39-144ef26446bf" />
 
 
+Once deepseek-r1 is successfully pulled, it will be shown in the model dropdown menu. You can start chatting with the model.
+
 
