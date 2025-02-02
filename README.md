@@ -502,3 +502,9 @@ Submitted batch job XXXXXX
 ssh -L localhost:7860:gpu##:7860 $USER@neuron.ksc.re.kr
 ```
 
+### Connecting to the Gradio UI
+Once the job starts, open a a new SSH client (e.g., Putty, MobaXterm, PowerShell, Command Prompt, etc) on your local machine and run the port forwarding command displayed in port_forwarding_command:
+
+![20240123_102609](https://github.com/hwang2006/Generative-AI-with-LLMs/assets/84169368/1f5dd57f-9872-491b-8dd4-0aa99b867789)
+
+
