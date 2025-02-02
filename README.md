@@ -9,6 +9,13 @@ Neuron is a KISTI GPU cluster system consisting of 65 nodes with 260 GPUs (120 o
 
 <p align="center"><img src="https://user-images.githubusercontent.com/84169368/205237254-b916eccc-e4b7-46a8-b7ba-c156e7609314.png"/></p>
 
+## Git Clone 
+You may want to git clone to clone this repository on your scratch direcory.
+```
+[glogin01]$ cd /scratch/$USER
+[glogin01]$ git clone 
+```
+
 ## Installing Conda
 Once logging in to Neuron, you will need to have either [Anaconda](https://www.anaconda.com/) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed on your scratch directory. Anaconda is distribution of the Python and R programming languages for scientific computing, aiming to simplify package management and deployment. Anaconda comes with +150 data science packages, whereas Miniconda, a small bootstrap version of Anaconda, comes with a handful of what's needed.
 
