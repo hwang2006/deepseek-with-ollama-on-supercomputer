@@ -121,9 +121,9 @@ conda 23.9.0
 ```
 
 ## Installing Ollama
-1. Install Ollama on your scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
+1. Install Ollama on your own scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
 ```
-[glogin01]$ 
+[glogin01]$ cat install_ollama.sh
 #!/bin/bash
 
 # 1. Create Ollama installation directory
@@ -143,16 +143,14 @@ tar -xvzf ollama-linux-amd64.tgz || { echo "Error: Could not extract Ollama"; ex
 # Clean up the tar file (optional)
 rm ollama-linux-amd64.tgz
 
-# Determine the actual extracted directory name (it might be ollama-linux-amd64 or similar)
-ollama_extracted_dir=$(ls -d ollama-*)
 
 # 4. Add to ~/.bashrc (more robust approach)
 bashrc_file="$HOME/.bashrc"
 
 # Check if the path is already in .bashrc to avoid duplicates
-if ! grep -q "$install_dir/$ollama_extracted_dir/bin" "$bashrc_file"; then
-  echo "export PATH=\$PATH:$install_dir/$ollama_extracted_dir/bin" >> "$bashrc_file"
-  echo "Ollama path added to ~/.bashrc.  Source ~/.bashrc or restart your terminal for changes to take effect."
+if ! grep -q "$install_dir/bin" "$bashrc_file"; then
+  echo "export PATH=\$install_dir/bin:$PATH" >> "$bashrc_file"
+  echo "Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for changes to take effect."
 else
     echo "Ollama path is already in ~/.bashrc"
 fi
@@ -162,6 +160,29 @@ fi
 # chmod +x "$install_dir/$ollama_extracted_dir/bin/ollama"
 
 echo "Ollama installation complete."
+```
+
+```
+[glogin01]$ ./install_ollama.sh
+--2025-02-02 21:32:09--  https://ollama.com/download/ollama-linux-amd64.tgz
+Resolving ollama.com (ollama.com)... 34.36.133.15
+Connecting to ollama.com (ollama.com)|34.36.133.15|:443... connected.
+HTTP request sent, awaiting response... 307 Temporary Redirect
+Location: https://github.com/ollama/ollama/releases/latest/download/ollama-linux-amd64.tgz [following]
+--2025-02-02 21:32:09--  https://github.com/ollama/ollama/releases/latest/download/ollama-linux-amd64.tgz
+Resolving github.com (github.com)... 20.200.245.247
+Connecting to github.com (github.com)|20.200.245.247|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+.
+.
+.
+./lib/ollama/runners/cpu_avx/ollama_llama_server
+./lib/ollama/libcublas.so.11.5.1.109
+./lib/ollama/libcublasLt.so.12
+Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for changes to take effect.
+Ollama installation complete.
+
+[glogin01]$ source ~/.bashrc
 ```
 
 ## Creating a Conda Virtual Environment
