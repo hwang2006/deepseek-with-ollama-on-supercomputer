@@ -508,7 +508,7 @@ ssh -L localhost:7860:gpu##:7860 $USER@neuron.ksc.re.kr
 <img width="787" alt="Image" src="https://github.com/user-attachments/assets/25b218f2-c188-43a0-8081-2814ba9044b4" />
 
 
-- Then, open http://localhost:7860 in your browser to access the Gradio UI and pull a DeepSeek-R1 model (for example, 'deepseek-r1:14b') to the ollama server models directory (i.e., /scratch/$USER/ollama/models) from the [DeepSeek-R1 models site](https://ollama.com/library/deepseek-r1) 
+- Then, open http://localhost:7860 in your browser to access the Gradio UI and pull a DeepSeek-R1 model (for example, 'deepseek-r1:14b') to the ollama server models directory (i.e., /scratch/$USER/ollama/models) from the [Ollama models site](https://ollama.com/search) 
 
 <img width="1231" alt="gradio_ui" src="https://github.com/user-attachments/assets/006ea85b-3535-4f2b-9f39-144ef26446bf" />
 
