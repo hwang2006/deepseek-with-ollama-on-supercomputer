@@ -13,7 +13,8 @@ Neuron is a KISTI GPU cluster system consisting of 65 nodes with 260 GPUs (120 o
 You may want to git clone to clone this repository on your scratch direcory.
 ```
 [glogin01]$ cd /scratch/$USER
-[glogin01]$ git clone 
+[glogin01]$ git clone https://github.com/hwang2006/deepseek-with-ollama-on-supercomputer.git
+
 ```
 
 ## Installing Conda
