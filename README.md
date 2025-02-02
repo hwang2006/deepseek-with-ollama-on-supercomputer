@@ -121,8 +121,8 @@ conda 23.9.0
 ```
 
 ## Installing Ollama
-1. Install Ollama on your own scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
-```
+Install Ollama on your own scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
+```bash
 [glogin01]$ cat install_ollama.sh
 #!/bin/bash
 
@@ -149,7 +149,7 @@ bashrc_file="$HOME/.bashrc"
 
 # Check if the path is already in .bashrc to avoid duplicates
 if ! grep -q "$install_dir/bin" "$bashrc_file"; then
-  echo "export PATH=\$install_dir/bin:$PATH" >> "$bashrc_file"
+  echo "export PATH=\$PATH:$install_dir/bin" >> "$bashrc_file"
   echo "Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for changes to take effect."
 else
     echo "Ollama path is already in ~/.bashrc"
@@ -160,9 +160,7 @@ fi
 # chmod +x "$install_dir/$ollama_extracted_dir/bin/ollama"
 
 echo "Ollama installation complete."
-```
 
-```
 [glogin01]$ ./install_ollama.sh
 --2025-02-02 21:32:09--  https://ollama.com/download/ollama-linux-amd64.tgz
 Resolving ollama.com (ollama.com)... 34.36.133.15
@@ -183,6 +181,9 @@ Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for c
 Ollama installation complete.
 
 [glogin01]$ source ~/.bashrc
+[glogin01]$ ollama -v
+Warning: could not connect to a running Ollama instance
+Warning: client version is 0.5.7
 ```
 
 ## Creating a Conda Virtual Environment
