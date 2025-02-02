@@ -187,7 +187,7 @@ Warning: client version is 0.5.7
 ```
 
 ## Creating a Conda Virtual Environment
-1. Create a conda virtual environment with a python version 3.10
+1. Create a conda virtual environment with a python version 3.11
 ```
 [glogin01]$ conda create -n deepseek python=3.11
 Retrieving notices: ...working... done
@@ -330,4 +330,20 @@ Downloading and Extracting Packages:
 Preparing transaction: done
 Verifying transaction: done
 Executing transaction: done
+```
+3. Install Gradio for UI
+```
+(deepseek) [glogin01]$ pip install gradio
+Looking in indexes: https://pypi.org/simple, https://pypi.ngc.nvidia.com
+Collecting gradio
+  Downloading gradio-5.14.0-py3-none-any.whl.metadata (16 kB)
+Collecting aiofiles<24.0,>=22.0 (from gradio)
+  Downloading aiofiles-23.2.1-py3-none-any.whl.metadata (9.7 kB)
+Collecting anyio<5.0,>=3.0 (from gradio)
+  Downloading anyio-4.8.0-py3-none-any.whl.metadata (4.6 kB)
+.
+.
+.
+Installing collected packages: pytz, pydub, websockets, tzdata, tqdm, tomlkit, sniffio, six, shellingham, semantic-version, ruff, python-multipart, pygments, pydantic-core, packaging, orjson, mdurl, h11, fsspec, ffmpy, click, annotated-types, aiofiles, uvicorn, python-dateutil, pydantic, markdown-it-py, huggingface-hub, httpcore, anyio, starlette, rich, pandas, httpx, typer, safehttpx, gradio-client, fastapi, gradio
+Successfully installed aiofiles-23.2.1 annotated-types-0.7.0 anyio-4.8.0 click-8.1.8 fastapi-0.115.8 ffmpy-0.5.0 fsspec-2025.2.0 gradio-5.14.0 gradio-client-1.7.0 h11-0.14.0 httpcore-1.0.7 httpx-0.28.1 huggingface-hub-0.28.1 markdown-it-py-3.0.0 mdurl-0.1.2 orjson-3.10.15 packaging-24.2 pandas-2.2.3 pydantic-2.10.6 pydantic-core-2.27.2 pydub-0.25.1 pygments-2.19.1 python-dateutil-2.9.0.post0 python-multipart-0.0.20 pytz-2025.1 rich-13.9.4 ruff-0.9.4 safehttpx-0.1.6 semantic-version-2.10.0 shellingham-1.5.4 six-1.17.0 sniffio-1.3.1 starlette-0.45.3 tomlkit-0.13.2 tqdm-4.67.1 typer-0.15.1 tzdata-2025.1 uvicorn-0.34.0 websockets-14.2
 ```
