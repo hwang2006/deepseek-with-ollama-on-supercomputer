@@ -123,17 +123,17 @@ conda 23.9.0
 ## Creating a Conda Virtual Environment
 You want to create a virtual envrionment with a python version 3.10 for Generative AI Practices.
 ```
-[glogin01]$ conda create -n genai python=3.10
+[glogin01]$ conda create -n deepseek python=3.11
 Retrieving notices: ...working... done
 Collecting package metadata (current_repodata.json): done
 Solving environment: done
 
 ## Package Plan ##
 
-  environment location: /scratch/qualis/miniconda3/envs/genai
+  environment location: /scratch/qualis/miniconda3/envs/deepseek
 
   added / updated specs:
-    - python=3.10
+    - python=3.11
 .
 .
 .
@@ -148,7 +148,7 @@ Executing transaction: done
 #
 # To activate this environment, use
 #
-#     $ conda activate genai
+#     $ conda activate deepseek
 #
 # To deactivate an active environment, use
 #
