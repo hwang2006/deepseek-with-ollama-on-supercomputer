@@ -126,7 +126,7 @@ to set up this repository on your scratch direcory.
 ```
 [glogin01]$ cd /scratch/$USER
 [glogin01]$ git clone https://github.com/hwang2006/deepseek-with-ollama-on-supercomputer.git
-[glogin01]$ ls -al deepseek
+[glogin01]$ cd deepseek-with-ollama-on-supercomputer
 ```
 
 ## Installing Ollama
@@ -503,12 +503,14 @@ ssh -L localhost:7860:gpu##:7860 $USER@neuron.ksc.re.kr
 ```
 
 ### Connecting to the Gradio UI
-Once the job starts, open a a new SSH client (e.g., Putty, MobaXterm, PowerShell, Command Prompt, etc) on your local machine and run the port forwarding command displayed in port_forwarding_command:
+- Once the job starts, open a a new SSH client (e.g., Putty, MobaXterm, PowerShell, Command Prompt, etc) on your local machine and run the port forwarding command displayed in port_forwarding_command:
 
 <img width="787" alt="Image" src="https://github.com/user-attachments/assets/25b218f2-c188-43a0-8081-2814ba9044b4" />
 
-Then, open http://localhost:7860 in your browser to access the Gradio UI.
+
+- Then, open http://localhost:7860 in your browser to access the Gradio UI and pull a DeepSeek-R1 model (for example, 'deepseek-r1:14b') to the ollama server models directory (i.e., /scratch/$USER/ollama/models) from the [DeepSeek-R1 models site](https://ollama.com/library/deepseek-r1) 
 
 <img width="1231" alt="gradio_ui" src="https://github.com/user-attachments/assets/006ea85b-3535-4f2b-9f39-144ef26446bf" />
+
 
 
