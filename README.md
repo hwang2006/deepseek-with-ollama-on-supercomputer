@@ -507,6 +507,8 @@ Once the job starts, open a a new SSH client (e.g., Putty, MobaXterm, PowerShell
 
 <img width="787" alt="Image" src="https://github.com/user-attachments/assets/25b218f2-c188-43a0-8081-2814ba9044b4" />
 
-![20240123_102609](https://github.com/hwang2006/Generative-AI-with-LLMs/assets/84169368/1f5dd57f-9872-491b-8dd4-0aa99b867789)
+Then, open http://localhost:7860 in your browser to access the Gradio UI.
+
+<img width="1231" alt="gradio_ui" src="https://github.com/user-attachments/assets/006ea85b-3535-4f2b-9f39-144ef26446bf" />
 
 
