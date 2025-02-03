@@ -2,7 +2,7 @@
 
 DeepSeek-R1, the recently released AI reasoning model from the Chinese AI startup DeepSeek, has gained significant attention for its performance, comparable to leading models like OpenAI's o1 reasoning model. It is open-source and free to use, allowing users to download, modify, and run it for their own purposes.
 
-This repository demonstrates how to run and test DeepSeek-R1 using [Ollama](https://ollama.com/) on a SLURM-managed supercomputer. Ollama provides a lightweight framework for downloading and running AI models locally, making AI deployment and management easier across different platforms, including macOS, Linux, and Windows.
+This repository demonstrates how to run and test DeepSeek-R1 using [Ollama](https://ollama.com/) with your own account on a SLURM-managed supercomputer. Ollama provides a lightweight framework for downloading and running AI models locally, making AI deployment and management easier across different platforms, including macOS, Linux, and Windows. You can also have access to Gradio UI to chat with the deepseek-r1 model interactively.   
 
 
 ## KISTI Neuron GPU Cluster
