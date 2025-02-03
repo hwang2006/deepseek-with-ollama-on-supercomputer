@@ -131,8 +131,8 @@ to set up this repository on your scratch direcory.
 
 ## Installing Ollama
 Install Ollama on your own scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
+#### Ollama Installing Script (install_ollama.sh)
 ```bash
-[glogin01]$ cat install_ollama.sh
 #!/bin/bash
 
 # 1. Create Ollama installation directory
@@ -169,7 +169,11 @@ fi
 # chmod +x "$install_dir/$ollama_extracted_dir/bin/ollama"
 
 echo "Ollama installation complete."
+```
 
+- to run the install_ollama.sh script
+```
+[glogin01]$ chmod +x install_ollama.sh
 [glogin01]$ ./install_ollama.sh
 --2025-02-02 21:32:09--  https://ollama.com/download/ollama-linux-amd64.tgz
 Resolving ollama.com (ollama.com)... 34.36.133.15
@@ -180,12 +184,9 @@ Location: https://github.com/ollama/ollama/releases/latest/download/ollama-linux
 Resolving github.com (github.com)... 20.200.245.247
 Connecting to github.com (github.com)|20.200.245.247|:443... connected.
 HTTP request sent, awaiting response... 302 Found
-.
-.
-.
-./lib/ollama/runners/cpu_avx/ollama_llama_server
-./lib/ollama/libcublas.so.11.5.1.109
-./lib/ollama/libcublasLt.so.12
+ .
+ .
+ .
 Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for changes to take effect.
 Ollama installation complete.
 
@@ -212,8 +213,7 @@ Solving environment: done
 .
 .
 .
-Proceed ([y]/n)? y    <========== type yes 
-
+Proceed ([y]/n)? y    <========== type yes
 
 Downloading and Extracting Packages:
 
@@ -252,7 +252,6 @@ Solving environment: done
     - pytorch==2.3.0
     - torchaudio==2.3.0
     - torchvision==0.18.0
-
 
 The following NEW packages will be INSTALLED:
 
