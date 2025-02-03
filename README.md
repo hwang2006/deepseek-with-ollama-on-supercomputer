@@ -437,14 +437,12 @@ ssh -L localhost:7860:gpu32:7860 $USER@neuron.ksc.re.kr
 <img width="787" alt="Image" src="https://github.com/user-attachments/assets/25b218f2-c188-43a0-8081-2814ba9044b4" />
 
 
-- Then, open http://localhost:7860 in your browser to access the Gradio UI and pull a DeepSeek-R1 model (for example, 'deepseek-r1:14b') to the ollama server models directory (i.e., /scratch/$USER/ollama/models) from the [Ollama models site](https://ollama.com/search) 
+- Then, open http://localhost:7860 in your browser to access the Gradio UI and pull a DeepSeek-R1 model (for example, 'deepseek-r1:14b') to the ollama server models directory (e.g., OLLAMA_MODELS="/scratch/$USER/ollama/models" in the slurm script) from the [Ollama models site](https://ollama.com/search) 
 
 <img width="1231" alt="gradio_ui" src="https://github.com/user-attachments/assets/006ea85b-3535-4f2b-9f39-144ef26446bf" />
 
 
-
-
-#### Once deepseek-r1 is successfully pulled, it will be listed in the 'Select Model' dropdown menu on the top right. You can start chatting with the deepseek-r1:14b model. You could also pull and chat with other models (e.g., llama3, mistral, etc) from the Ollama model site. 
+#### Once the deepseek-r1 model is successfully downloaded, it will be listed in the 'Select Model' dropdown menu on the top right. You can start chatting with the deepseek-r1:14b model. You could also pull and chat with other models (e.g., llama3, mistral, etc) from the Ollama model site. 
 
 <img width="1178" alt="gradio_ui2" src="https://github.com/user-attachments/assets/291e20f0-a901-48f8-bb46-a0f667dc79f6" />
 
