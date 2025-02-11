@@ -108,12 +108,13 @@ if [ -e "$GRADIO_LOG" ]; then
   echo "Old $GRADIO_LOG file removed."
 fi
 
-# Start Gradio in the background and log output
+# Start Gradio and log output
 echo "Starting Gradio..."
-#python gradio_chatbot.py --server_name=0.0.0.0 --server_port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 &
 python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 
-#python ollama_web.py > "$GRADIO_LOG" 2>&1 &
 echo "Gradio logs are being written to $GRADIO_LOG"
+
+# Start Gradio for the llama3.2-vision multimodal chatbot and log output 
+#python multimodal_chatbot.py > "$GRADIO_LOG" 2>&1
 
 # Notify user of successful launch
 echo "Ollama and Gradio have been started."
