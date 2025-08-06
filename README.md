@@ -196,6 +196,13 @@ Warning: could not connect to a running Ollama instance
 Warning: client version is 0.5.7
 ```
 
+- to install **specific versions** using the install_ollama_user.sh script
+Use OLLAMA_VERSION environment variable with the install script to install a specific version of Ollama, including pre-releases. You can find the version numbers in the [releases page](https://github.com/ollama/ollama/releases).  
+```
+[glogin01]$ chmod +x install_ollama_user.sh
+[glogin01]$ OLLAMA_VERSION=0.5.7 ./install_ollama_user.sh
+```
+
 ## Creating a Conda Virtual Environment
 1. Create a conda virtual environment with a python version 3.11
 ```
