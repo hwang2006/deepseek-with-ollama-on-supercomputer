@@ -114,7 +114,8 @@ def create_interface(ollama_url):
 
         with gr.Row():
             with gr.Column(scale=4):
-                chatbot = gr.Chatbot(height=400)
+                #chatbot = gr.Chatbot(height=400)
+                chatbot = gr.Chatbot(height=400, type="messages")
                 message = gr.Textbox(label="Message", placeholder="Type your message here...")
                 submit = gr.Button("Send")
 
@@ -143,14 +144,19 @@ def create_interface(ollama_url):
                 clear = gr.Button("Clear Chat")
 
         def respond(message, chat_history, model_name, temp):
+            print(f"[Prompt] User said: {message}") #for debugging purpose
+
             if not message.strip():
                 return "", chat_history
 
-            bot_message = ""
-            for chunk in chat.generate_response_stream(message, chat_history, model_name, temp):
-                bot_message += chunk
-                yield "", chat_history + [(message, bot_message)]
+            new_chat_history = chat_history + [{"role": "user", "content": message}]
+            assistant_message = ""
 
+            for chunk in chat.generate_response_stream(message, chat_history, model_name, temp):
+                assistant_message += chunk
+                yield "", new_chat_history + [
+                    {"role": "assistant", "content": assistant_message}]
+        
         def update_model_list():
             """Updates the model list and returns it."""
             print("Updating Model List")
@@ -209,4 +215,5 @@ if __name__ == "__main__":
 
     iface = create_interface(args.ollama_url)
     iface.launch(server_name=args.host, server_port=args.port, share=args.share)
+
 

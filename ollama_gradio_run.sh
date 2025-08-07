@@ -17,89 +17,68 @@
 #SBATCH --gres=gpu:1          # number of gpus per node
 #SBATCH --cpus-per-task=8     # number of cpus per task
 
-# Check and remove existing port forwarding command file
-if [ -e port_forwarding_command ]; then
-  rm port_forwarding_command
-fi
+# Exit on any error
+#set -e
 
-# Getting the port and node name
-SERVER="`hostname`"
-PORT_GRADIO=$(($RANDOM + 10000)) # Generate a random port number greater than 10000
+# Cleanup function
+#cleanup() {
+#    echo "Cleaning up processes..."
+#    if [ -n "$OLLAMA_PID" ]; then
+#        kill -TERM $OLLAMA_PID 2>/dev/null || true
+#    fi
+#    if [ -n "$GRADIO_PID" ]; then
+#        kill -TERM $GRADIO_PID 2>/dev/null || true
+#    fi
+#    exit 0
+#}
+#trap cleanup EXIT INT TERM
+
+# Port and paths
+SERVER="$(hostname)"
 PORT_GRADIO=7860
+OLLAMA_PORT=11434
 
-echo $SERVER
-echo $PORT_GRADIO
+GRADIO_LOG="gradio_server.log"
+OLLAMA_LOG="ollama_server.log"
+OLLAMA_MODELS="/scratch/$USER/ollama/models"
+
+echo "========================================"
+echo "Starting Ollama + Gradio on $SERVER"
+echo "Gradio Port: $PORT_GRADIO"
+echo "Ollama Port: $OLLAMA_PORT"
+echo "========================================"
 
 # Create port forwarding command and display it
 echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr" > port_forwarding_command
 echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr"
 
-# Load necessary modules
-echo "Load module-environment"
+# Load modules and env
+echo "📦 Loading modules..."
 module load gcc/10.2.0 cuda/12.1
 
-# Activate the Conda environment
-echo "Activating Conda environment..."
+echo "🔍 GPU Information:"
+nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv,noheader,nounits
+
+echo "🐍 Activating Conda environment..."
 source ~/.bashrc
 conda activate deepseek
+
+echo "Python version: $(python --version)"
+echo "Ollama path: $(which ollama 2>/dev/null || echo 'Not found in PATH')"
 
 # Navigate to the workspace directory
 cd /scratch/$USER/deepseek
 
-# Log files
-GRADIO_LOG="gradio_server.log"
-OLLAMA_LOG="ollama_server.log"
 
-# ============================
-# Manage Ollama Server
-# ============================
-OLLAMA_PORT=11434
-OLLAMA_PID=$(lsof -t -i:$OLLAMA_PORT)
-OLLAMA_PID=$(ps aux | grep ollama | grep -v grep | awk '{print $2}' )
-
-if [ -n "$OLLAMA_PID" ]; then
-  echo "Ollama server is already running with PID $OLLAMA_PID. Killing the process..."
-  kill -9 $OLLAMA_PID
-  echo "Ollama process killed."
-fi
+echo "🧹 Cleaning up existing processes..."
+pkill -f "ollama serve" 2>/dev/null || true
+pkill -f "ollama_web.py" 2>/dev/null || true
+sleep 2
 
 # Remove old Ollama log file if it exists
 if [ -e "$OLLAMA_LOG" ]; then
   rm "$OLLAMA_LOG"
   echo "Old $OLLAMA_LOG file removed."
-fi
-
-# Start Ollama server in the background
-echo "Starting Ollama server..."
-OLLAMA_MODELS="/scratch/$USER/ollama/models"
-OLLAMA_ENV_VARS=(
-  "OLLAMA_HOST=127.0.0.1:11434"
-  "OLLAMA_MAX_LOADED_MODELS=2"
-  "OLLAMA_NUM_PARALLEL=4"
-  "OLLAMA_FLASH_ATTENTION=1"
-  "OLLAMA_KV_CACHE_TYPE=f16"
-  "OLLAMA_GPU_OVERHEAD=104857600"
-  "OLLAMA_MODELS=$OLLAMA_MODELS"
-)
-
-# Export environment variables and run Ollama
-for VAR in "${OLLAMA_ENV_VARS[@]}"; do
-  export $VAR
-done
-
-ollama serve > "$OLLAMA_LOG" 2>&1 &
-echo "Ollama logs are being written to $OLLAMA_LOG"
-
-# ============================
-# Manage Gradio Server
-# ============================
-
-# Check if a Gradio server is already running and kill it
-GRADIO_PID=$(lsof -t -i:$PORT_GRADIO)
-if [ -n "$GRADIO_PID" ]; then
-  echo "Gradio server is already running with PID $GRADIO_PID. Killing the process..."
-  kill -9 $GRADIO_PID
-  echo "Gradio process killed."
 fi
 
 # Remove old Gradio log file if it exists
@@ -108,15 +87,81 @@ if [ -e "$GRADIO_LOG" ]; then
   echo "Old $GRADIO_LOG file removed."
 fi
 
-# Start Gradio and log output
-echo "Starting Gradio..."
-python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 
-echo "Gradio logs are being written to $GRADIO_LOG"
+# Prepare Ollama environment
+mkdir -p "$OLLAMA_MODELS"
+export OLLAMA_HOST="127.0.0.1:$OLLAMA_PORT"
+export OLLAMA_MODELS="$OLLAMA_MODELS"
+export OLLAMA_MAX_LOADED_MODELS=3
+export OLLAMA_NUM_PARALLEL=6
+export OLLAMA_FLASH_ATTENTION=1
+export OLLAMA_KV_CACHE_TYPE=f16
+export OLLAMA_GPU_OVERHEAD=209715200
+export OLLAMA_KEEP_ALIVE=30m
+export OLLAMA_MAX_QUEUE=128
+export CUDA_VISIBLE_DEVICES=0
 
-# Start Gradio for the llama3.2-vision multimodal chatbot and log output 
-#python multimodal_chatbot.py > "$GRADIO_LOG" 2>&1
+echo "🚀 Starting Ollama server..."
+ollama serve > "$OLLAMA_LOG" 2>&1 &
+OLLAMA_PID=$!
+echo "Ollama PID: $OLLAMA_PID"
 
-# Notify user of successful launch
-echo "Ollama and Gradio have been started."
-echo "Gradio is running at: http://localhost:$PORT_GRADIO (port-forwarded)"
+echo "⏳ Waiting for Ollama server to start..."
+for attempt in {1..30}; do
+    if curl -s http://127.0.0.1:$OLLAMA_PORT/api/tags >/dev/null; then
+        echo "✅ Ollama server is ready!"
+        break
+    fi
+    echo "Attempt $attempt/30 - waiting for Ollama..."
+    sleep 2
+done
+
+if ! curl -s http://127.0.0.1:$OLLAMA_PORT/api/tags >/dev/null; then
+    echo "❌ Ollama server failed to start."
+    tail -20 "$OLLAMA_LOG"
+    exit 1
+fi
+
+echo "📋 Available models:"
+ollama list || echo "No models found"
+
+# Gradio setup
+echo "🌐 Starting Gradio web interface..."
+
+export XDG_CACHE_HOME=/tmp/${USER}/.gradio_cache
+export TMPDIR=/tmp/${USER}/tmp
+mkdir -p $XDG_CACHE_HOME $TMPDIR
+
+#python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 &
+python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} --share > "$GRADIO_LOG" 2>&1 & 
+GRADIO_PID=$!
+echo "Gradio PID: $GRADIO_PID"
+
+# Wait and verify
+echo "⏳ Waiting for Gradio to start..."
+sleep 5
+
+if kill -0 $GRADIO_PID 2>/dev/null; then
+    echo "✅ Gradio is running!"
+else
+    echo "❌ Gradio failed to start"
+    tail -20 "$GRADIO_LOG"
+    exit 1
+fi
+
+# Final status
+echo ""
+echo "🎉 All services started successfully!"
+echo "📊 Access Gradio at: http://localhost:7860 (after port forwarding)"
+echo "🔧 Ollama API at: http://127.0.0.1:$OLLAMA_PORT"
+echo ""
+echo "📝 Log files:"
+echo "  Ollama: $OLLAMA_LOG"
+echo "  Gradio: $GRADIO_LOG"
+echo ""
+echo "🔗 Port forwarding command:"
+echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr"
+echo ""
+
+#echo "🕓 Waiting for servers to finish... Press Ctrl+C to terminate."
+#wait $GRADIO_PID
 
