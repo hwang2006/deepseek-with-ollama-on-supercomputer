@@ -388,7 +388,6 @@ echo ""
 echo "🔗 Port forwarding command:"
 echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr"
 echo ""
-
 ```
 
 ### Submitting the Slurm Script
