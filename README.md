@@ -281,16 +281,21 @@ Executing transaction: done
 (deepseek) [glogin01]$ pip install gradio
 Looking in indexes: https://pypi.org/simple, https://pypi.ngc.nvidia.com
 Collecting gradio
-  Downloading gradio-5.14.0-py3-none-any.whl.metadata (16 kB)
-Collecting aiofiles<24.0,>=22.0 (from gradio)
-  Downloading aiofiles-23.2.1-py3-none-any.whl.metadata (9.7 kB)
-Collecting anyio<5.0,>=3.0 (from gradio)
-  Downloading anyio-4.8.0-py3-none-any.whl.metadata (4.6 kB)
+  Downloading gradio-5.41.1-py3-none-any.whl.metadata (16 kB)
+Requirement already satisfied: aiofiles<25.0,>=22.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from gradio) (23.2.1)
+Requirement already satisfied: anyio<5.0,>=3.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from gradio) (4.10.0)
+Requirement already satisfied: brotli>=1.1.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from gradio) (1.1.0)
 .
 .
 .
-Installing collected packages: pytz, pydub, websockets, tzdata, tqdm, tomlkit, sniffio, six, shellingham, semantic-version, ruff, python-multipart, pygments, pydantic-core, packaging, orjson, mdurl, h11, fsspec, ffmpy, click, annotated-types, aiofiles, uvicorn, python-dateutil, pydantic, markdown-it-py, huggingface-hub, httpcore, anyio, starlette, rich, pandas, httpx, typer, safehttpx, gradio-client, fastapi, gradio
-Successfully installed aiofiles-23.2.1 annotated-types-0.7.0 anyio-4.8.0 click-8.1.8 fastapi-0.115.8 ffmpy-0.5.0 fsspec-2025.2.0 gradio-5.14.0 gradio-client-1.7.0 h11-0.14.0 httpcore-1.0.7 httpx-0.28.1 huggingface-hub-0.28.1 markdown-it-py-3.0.0 mdurl-0.1.2 orjson-3.10.15 packaging-24.2 pandas-2.2.3 pydantic-2.10.6 pydantic-core-2.27.2 pydub-0.25.1 pygments-2.19.1 python-dateutil-2.9.0.post0 python-multipart-0.0.20 pytz-2025.1 rich-13.9.4 ruff-0.9.4 safehttpx-0.1.6 semantic-version-2.10.0 shellingham-1.5.4 six-1.17.0 sniffio-1.3.1 starlette-0.45.3 tomlkit-0.13.2 tqdm-4.67.1 typer-0.15.1 tzdata-2025.1 uvicorn-0.34.0 websockets-14.2
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from rich>=10.11.0->typer<1.0,>=0.12->gradio) (2.19.2)
+Requirement already satisfied: mdurl~=0.1 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich>=10.11.0->typer<1.0,>=0.12->gradio) (0.1.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from requests->huggingface-hub<1.0,>=0.33.5->gradio) (3.4.2)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from requests->huggingface-hub<1.0,>=0.33.5->gradio) (2.5.0)
+Downloading gradio-5.41.1-py3-none-any.whl (59.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.7/59.7 MB 41.0 MB/s eta 0:00:00
+Installing collected packages: gradio
+Successfully installed gradio-5.41.1
 ```
 
 ## Running Gradio UI along with launching Ollama and Gradio server on compute node
@@ -411,7 +416,7 @@ fi
 # Start Gradio in the background and log output
 echo "Starting Gradio..."
 #python gradio_chatbot.py --server_name=0.0.0.0 --server_port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 &
-python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1
+python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} --share > "$GRADIO_LOG" 2>&1
 #python ollama_web.py > "$GRADIO_LOG" 2>&1 &
 echo "Gradio logs are being written to $GRADIO_LOG"
 
