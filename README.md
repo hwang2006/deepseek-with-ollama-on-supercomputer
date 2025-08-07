@@ -130,46 +130,7 @@ to set up this repository on your scratch direcory.
 ```
 
 ## Installing Ollama
-Install Ollama on your own scratch directory (i.e., /scratch/$USER) by runing the install_ollama.sh script
-#### Ollama Installing Script (install_ollama.sh)
-```bash
-#!/bin/bash
-
-# 1. Create Ollama installation directory
-user="$USER"  # Or use $UID for more robustness in some edge cases
-install_dir="/scratch/$user/ollama"
-
-mkdir -p "$install_dir"  # -p creates parent directories if needed
-
-# 2. Change directory and download
-cd "$install_dir" || { echo "Error: Could not change directory to $install_dir"; exit 1; }
-
-wget "https://ollama.com/download/ollama-linux-amd64.tgz" || { echo "Error: Could not download Ollama"; exit 1; }
-
-# 3. Unzip/untar
-tar -xvzf ollama-linux-amd64.tgz || { echo "Error: Could not extract Ollama"; exit 1; }
-
-# Clean up the tar file (optional)
-rm ollama-linux-amd64.tgz
-
-
-# 4. Add to ~/.bashrc (more robust approach)
-bashrc_file="$HOME/.bashrc"
-
-# Check if the path is already in .bashrc to avoid duplicates
-if ! grep -q "$install_dir/bin" "$bashrc_file"; then
-  echo "export PATH=\$PATH:$install_dir/bin" >> "$bashrc_file"
-  echo "Ollama path added to ~/.bashrc.  source ~/.bashrc or restart your terminal for changes to take effect."
-else
-    echo "Ollama path is already in ~/.bashrc"
-fi
-
-
-# Optional: Make the ollama binary executable (if needed - usually not necessary with the official .tgz)
-# chmod +x "$install_dir/$ollama_extracted_dir/bin/ollama"
-
-echo "Ollama installation complete."
-```
+Install Ollama on your own scratch directory (i.e., /scratch/$USER) with the installation scripts.
 
 - to run the install_ollama.sh script
 ```
@@ -241,40 +202,17 @@ Executing transaction: done
 ```
 [glogin01]$ module load gcc/10.2.0 cmake/3.26.2 cuda/12.1
 [glogin01]$ conda activate deepseek
-(deepseek) [glogin01]$ conda install conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=12.1 -c pytorch -c nvidia -y
-Channels:
- - pytorch
- - nvidia
- - defaults
-Platform: linux-64
-Collecting package metadata (repodata.json): done
-Solving environment: done
-
-## Package Plan ##
-
-  environment location: /scratch/qualis/miniconda3/envs/test
-
-  added / updated specs:
-    - pytorch-cuda=12.1
-    - pytorch==2.3.0
-    - torchaudio==2.3.0
-    - torchvision==0.18.0
-
-The following NEW packages will be INSTALLED:
-
-  blas               pkgs/main/linux-64::blas-1.0-mkl
-  brotli-python      pkgs/main/linux-64::brotli-python-1.0.9-py310h6a678d5_8
-  .
-  .
-  .
-  yaml               pkgs/main/linux-64::yaml-0.2.5-h7b6447c_0
-  zstd               pkgs/main/linux-64::zstd-1.5.5-hc292b87_2
-
-Downloading and Extracting Packages:
-
-Preparing transaction: done
-Verifying transaction: done
-Executing transaction: done
+(deepseek) [glogin01]$ pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+Looking in indexes: https://download.pytorch.org/whl/cu121, https://pypi.ngc.nvidia.com
+Requirement already satisfied: torch==2.4.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (2.4.0+cu121)
+Requirement already satisfied: torchvision==0.19.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (0.19.0+cu121)
+Requirement already satisfied: torchaudio==2.4.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (2.4.0+cu121)
+.
+.
+.
+Requirement already satisfied: nvidia-nvjitlink-cu12 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch==2.4.0) (12.9.86)
+Requirement already satisfied: MarkupSafe>=2.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from jinja2->torch==2.4.0) (2.1.5)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /scratch/qualis/miniconda3/envs/deepseek/lib/python3.11/site-packages (from sympy->torch==2.4.0) (1.3.0)
 ```
 3. Install Gradio for UI
 ```
@@ -302,7 +240,7 @@ Successfully installed gradio-5.41.1
 This section describes how to run the Gradio UI along with launching the Ollama server and Gradio server on a compute node. The following Slurm script will start both servers and output a port forwarding command, which you can use to connect remotely.
 
 ### Slurm Script (ollama_gradio_run.sh)
-```bash
+```
 #!/bin/bash
 
 #SBATCH --comment=pytorch
@@ -322,89 +260,52 @@ This section describes how to run the Gradio UI along with launching the Ollama 
 #SBATCH --gres=gpu:1          # number of gpus per node
 #SBATCH --cpus-per-task=8     # number of cpus per task
 
-# Check and remove existing port forwarding command file
-if [ -e port_forwarding_command ]; then
-  rm port_forwarding_command
-fi
-
-# Getting the port and node name
-SERVER="`hostname`"
-PORT_GRADIO=$(($RANDOM + 10000)) # Generate a random port number greater than 10000
+# Port and paths
+SERVER="$(hostname)"
 PORT_GRADIO=7860
+OLLAMA_PORT=11434
 
-echo $SERVER
-echo $PORT_GRADIO
+GRADIO_LOG="gradio_server.log"
+OLLAMA_LOG="ollama_server.log"
+OLLAMA_MODELS="/scratch/$USER/ollama/models"
+
+echo "========================================"
+echo "Starting Ollama + Gradio on $SERVER"
+echo "Gradio Port: $PORT_GRADIO"
+echo "Ollama Port: $OLLAMA_PORT"
+echo "========================================"
 
 # Create port forwarding command and display it
 echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr" > port_forwarding_command
 echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr"
 
-# Load necessary modules
-echo "Load module-environment"
+# Load modules and env
+echo "📦 Loading modules..."
 module load gcc/10.2.0 cuda/12.1
 
-# Activate the Conda environment
-echo "Activating Conda environment..."
+echo "🔍 GPU Information:"
+nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv,noheader,nounits
+
+echo "🐍 Activating Conda environment..."
 source ~/.bashrc
 conda activate deepseek
+
+echo "Python version: $(python --version)"
+echo "Ollama path: $(which ollama 2>/dev/null || echo 'Not found in PATH')"
 
 # Navigate to the workspace directory
 cd /scratch/$USER/deepseek
 
-# Log files
-GRADIO_LOG="gradio_server.log"
-OLLAMA_LOG="ollama_server.log"
 
-# ============================
-# Manage Ollama Server
-# ============================
-OLLAMA_PORT=11434
-OLLAMA_PID=$(lsof -t -i:$OLLAMA_PORT)
-OLLAMA_PID=$(ps aux | grep ollama | grep -v grep | awk '{print $2}' )
-
-if [ -n "$OLLAMA_PID" ]; then
-  echo "Ollama server is already running with PID $OLLAMA_PID. Killing the process..."
-  kill -9 $OLLAMA_PID
-  echo "Ollama process killed."
-fi
+echo "🧹 Cleaning up existing processes..."
+pkill -f "ollama serve" 2>/dev/null || true
+pkill -f "ollama_web.py" 2>/dev/null || true
+sleep 2
 
 # Remove old Ollama log file if it exists
 if [ -e "$OLLAMA_LOG" ]; then
   rm "$OLLAMA_LOG"
   echo "Old $OLLAMA_LOG file removed."
-fi
-
-# Start Ollama server in the background
-echo "Starting Ollama server..."
-OLLAMA_MODELS="/scratch/$USER/ollama/models"
-OLLAMA_ENV_VARS=(
-  "OLLAMA_HOST=127.0.0.1:11434"
-  "OLLAMA_MAX_LOADED_MODELS=2"
-  "OLLAMA_NUM_PARALLEL=4"
-  "OLLAMA_FLASH_ATTENTION=1"
-  "OLLAMA_KV_CACHE_TYPE=f16"
-  "OLLAMA_GPU_OVERHEAD=104857600"
-  "OLLAMA_MODELS=$OLLAMA_MODELS"
-)
-
-# Export environment variables and run Ollama
-for VAR in "${OLLAMA_ENV_VARS[@]}"; do
-  export $VAR
-done
-
-ollama serve > "$OLLAMA_LOG" 2>&1 &
-echo "Ollama logs are being written to $OLLAMA_LOG"
-
-# ============================
-# Manage Gradio Server
-# ============================
-
-# Check if a Gradio server is already running and kill it
-GRADIO_PID=$(lsof -t -i:$PORT_GRADIO)
-if [ -n "$GRADIO_PID" ]; then
-  echo "Gradio server is already running with PID $GRADIO_PID. Killing the process..."
-  kill -9 $GRADIO_PID
-  echo "Gradio process killed."
 fi
 
 # Remove old Gradio log file if it exists
@@ -413,16 +314,81 @@ if [ -e "$GRADIO_LOG" ]; then
   echo "Old $GRADIO_LOG file removed."
 fi
 
-# Start Gradio in the background and log output
-echo "Starting Gradio..."
-#python gradio_chatbot.py --server_name=0.0.0.0 --server_port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 &
-python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} --share > "$GRADIO_LOG" 2>&1
-#python ollama_web.py > "$GRADIO_LOG" 2>&1 &
-echo "Gradio logs are being written to $GRADIO_LOG"
+# Prepare Ollama environment
+mkdir -p "$OLLAMA_MODELS"
+export OLLAMA_HOST="127.0.0.1:$OLLAMA_PORT"
+export OLLAMA_MODELS="$OLLAMA_MODELS"
+export OLLAMA_MAX_LOADED_MODELS=3
+export OLLAMA_NUM_PARALLEL=6
+export OLLAMA_FLASH_ATTENTION=1
+export OLLAMA_KV_CACHE_TYPE=f16
+export OLLAMA_GPU_OVERHEAD=209715200
+export OLLAMA_KEEP_ALIVE=30m
+export OLLAMA_MAX_QUEUE=128
+export CUDA_VISIBLE_DEVICES=0
 
-# Notify user of successful launch
-echo "Ollama and Gradio have been started."
-echo "Gradio is running at: http://localhost:$PORT_GRADIO (port-forwarded)"
+echo "🚀 Starting Ollama server..."
+ollama serve > "$OLLAMA_LOG" 2>&1 &
+OLLAMA_PID=$!
+echo "Ollama PID: $OLLAMA_PID"
+
+echo "⏳ Waiting for Ollama server to start..."
+for attempt in {1..30}; do
+    if curl -s http://127.0.0.1:$OLLAMA_PORT/api/tags >/dev/null; then
+        echo "✅ Ollama server is ready!"
+        break
+    fi
+    echo "Attempt $attempt/30 - waiting for Ollama..."
+    sleep 2
+done
+
+if ! curl -s http://127.0.0.1:$OLLAMA_PORT/api/tags >/dev/null; then
+    echo "❌ Ollama server failed to start."
+    tail -20 "$OLLAMA_LOG"
+    exit 1
+fi
+
+echo "📋 Available models:"
+ollama list || echo "No models found"
+
+# Gradio setup
+echo "🌐 Starting Gradio web interface..."
+
+export XDG_CACHE_HOME=/tmp/${USER}/.gradio_cache
+export TMPDIR=/tmp/${USER}/tmp
+mkdir -p $XDG_CACHE_HOME $TMPDIR
+
+#python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} > "$GRADIO_LOG" 2>&1 &
+python ollama_web.py --host=0.0.0.0 --port=${PORT_GRADIO} --share > "$GRADIO_LOG" 2>&1 &
+GRADIO_PID=$!
+echo "Gradio PID: $GRADIO_PID"
+
+# Wait and verify
+echo "⏳ Waiting for Gradio to start..."
+sleep 5
+
+if kill -0 $GRADIO_PID 2>/dev/null; then
+    echo "✅ Gradio is running!"
+else
+    echo "❌ Gradio failed to start"
+    tail -20 "$GRADIO_LOG"
+    exit 1
+fi
+
+# Final status
+echo ""
+echo "🎉 All services started successfully!"
+echo "📊 Access Gradio at: http://localhost:7860 (after port forwarding)"
+echo "🔧 Ollama API at: http://127.0.0.1:$OLLAMA_PORT"
+echo ""
+echo "📝 Log files:"
+echo "  Ollama: $OLLAMA_LOG"
+echo "  Gradio: $GRADIO_LOG"
+echo ""
+echo "🔗 Port forwarding command:"
+echo "ssh -L localhost:7860:${SERVER}:${PORT_GRADIO} ${USER}@neuron.ksc.re.kr"
+echo ""
+
 ```
 
 ### Submitting the Slurm Script
